@@ -63,4 +63,64 @@
  */
 export function validateForm(formData) {
   // Your code here
+  const errors = {};
+
+  const name = formData.name?.trim() ?? "";
+  if (typeof name !== "string" || name.length < 2 || name.length > 50) {
+    errors.name = "Name must be 2-50 characters";
+  }
+
+  const email = formData.email ?? "";
+  const atIndex = email.indexOf("@");
+  const lastAtIndex = email.lastIndexOf("@");
+  const dotIndex = email.indexOf(".", atIndex);
+  if (
+    typeof email !== "string" ||
+    atIndex === -1 ||
+    atIndex !== lastAtIndex ||
+    dotIndex === -1 ||
+    dotIndex === atIndex + 1
+  ) {
+    errors.email = "Invalid email format";
+  }
+
+  const phone = formData.phone ?? "";
+  const isPhoneValid =
+    typeof phone === "string" &&
+    phone.length === 10 &&
+    ["6", "7", "8", "9"].includes(phone[0]) &&
+    phone.split("").every(char => char >= "0" && char <= "9");
+  if (!isPhoneValid) {
+    errors.phone = "Invalid Indian phone number";
+  }
+
+  const ageInput = formData.age;
+  const age = parseInt(ageInput);
+  if (isNaN(age) || age < 16 || age > 100 || !Number.isInteger(Number(ageInput))) {
+    errors.age = "Age must be an integer between 16 and 100";
+  }
+
+  const pincode = formData.pincode ?? "";
+  const isPincodeValid =
+    typeof pincode === "string" &&
+    pincode.length === 6 &&
+    pincode[0] !== "0" &&
+    pincode.split("").every(char => char >= "0" && char <= "9");
+  if (!isPincodeValid) {
+    errors.pincode = "Invalid Indian pincode";
+  }
+
+  const state = formData?.state ?? "";
+  if (typeof state !== "string" || state.trim() === "") {
+    errors.state = "State is required";
+  }
+
+  if (!Boolean(formData.agreeTerms)) {
+    errors.agreeTerms = "Must agree to terms";
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
 }
